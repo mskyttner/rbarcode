@@ -1,0 +1,139 @@
+Vad är en DNA-barcode-visualisering?
+========================================================
+
+```{r, message=FALSE, echo=FALSE}
+require("rbarcode")
+
+primo <- "CTAATTTTTGGGGCCTGAGCGGGCATGGTTGGAACCGCCCTCAGCCTGCTCATTCGCGCAGAACTCGGTCAACCAGGAACCCTACTAGGAGACGACCAGATCTACAACGTAATCGTCACTGCCCATGCCTTCGTA
+ATAATCTTCTTTATAGTCATACCAATCATAATCGGGGGCTTTGGAAACTGACTAGTCCCCCTTATAATCGGCGCCCCAGACATAGCGTTCCCCCGTATAAATAACATAAGCTTCTGACTACTCCCCCCATCCTTCCTT
+CTCCTACTAGCCTCCTCCACCGTAGAAGCTGGTGCTGGTACAGGGTGAACAGTCTACCCCCCTCTAGCTGGTAATCTGGCCCACGCCGGAGCTTCTGTAGACCTAGCCATCTTCTCCCTACACCTCGCTGGAGTCT
+CATCAATCCTAGGTGCAATCAACTTCATCACTACTGCCATTAACATAAAGCCCCCGGCCCTATCTCAATACCAAACCCCCCTATTCGTATGATCCGTACTAATCACAGCCGTCCTACTATTACTTTCACTGCCCGTCCT
+CGCTGCCGGCATTACAATGCTCCTCACAGACCGAAACCTAAACACCACATTCTTTGACCCAGCCGGAGGAGGAGACCCAGTCCTATACCAACACCTATTC"
+
+secundo <- "CTAATCTTCGGTGCATGAGCTGGCATGGTCGGAACCGCCCTCAGCCTGCTTATTCGTGCAGAACTAGGCCAACCAGGAACCCTCTTGGGAGATGACCAAATCTACAATGTAATCGTTACTGCTCATGCATTCGTAA
+TAATTTTCTTCATAGTTATACCAATCATGATCGGAGGATTTGGAAATTGACTAGTCCCACTCATAATCGGCGCCCCCGACATAGCATTTCCTCGTATAAACAATATAAGCTTCTGACTACTCCCCCCATCATTCCTAT
+TATTACTAGCATCCTCTACAGTAGAAGCTGGAGCTGGCACAGGATGAACAGTATATCCACCCCTCGCCGGCAACCTAGCCCACGCAGGAGCCTCAGTAGACCTAGCTATTTTCTCCCTCCATTTAGCAGGTGTCTC
+CTCCATCCTAGGTGCCATTAACTTTATCACCACTGCCATTAACATAAAACCACCAGCCCTGTCCCAATACCAAACACCCCTATTTGTATGATCAGTACTCATTACCGCCGTCTTACTGCTACTCTCACTCCCAGTCCTT
+GCTGCCGGCATCACCATGCTATTAACAGATCGTAATCTAAACACCACATTCTTTGACCCAGCCGGAGGAGGAGACCCAGTCCTATACCAACATCTCTTC"
+
+primo <- actg_unwrap(primo)
+secundo <- actg_unwrap(secundo)
+
+primo_63w <- actg_wrap(primo, 63)
+secundo_63w <- actg_wrap(secundo, 63)
+
+primo_3k <- actg_k3(primo)
+secundo_3k <- actg_k3(secundo)
+
+primo_12k <- actg_k3(primo, invert = TRUE)
+secundo_12k <-actg_k3(secundo, invert = TRUE)
+
+```
+
+En DNA streckkodsekvens från en blåkråka
+------------------------
+```
+`r primo_63w`
+```
+
+En DNA streckkodsekvens från en morkulla
+---------------------
+```
+`r secundo_63w`
+```
+
+Referensexemplar
+---------------
+Referensexemplaren som finns bevarade på Naturhistoriska Riksmuseet av blåkråka (Cat. id. NRM 20106015) - den övre bilden - och morkulla (Cat. id. NRM  20046331) - den nedre bilden - som de illustrerade streckkoderna har sekvenserats ifrån. 
+
+I detta fall en felflugen blåkråka från Ramsberg norr om Lindesberg.  
+![alt text][id1]
+
+Och en morkulla från Fibysjön utanför Uppsala.  
+![alt text][id2]
+
+[id1]: blue-bird.png "Referensexemplar Blåkråka"
+[id2]: brown-bird.png "Referensexemplar Morkulla"
+
+Visualisering
+--------------
+
+Man kan visualisera en DNA sekvens på ett sätt som blir mer överskådligt om man låter linjer
+i fyra olika färger representera ordningen av kvävebaserna A, C, T och G i genen. 
+
+Då åskådliggörs också likheten med vanliga streckkoder för tex produkter och det förklarar varför det kallas DNA streckkodning. Sekvenserna illustrerade på klassiskt sätt ser ut såhär, med Blåkråka alltid överst och därefter Morkulla:  
+
+```{r fig.width = 6, fig.height = 0.5, echo = FALSE} 
+barcode(primo)
+barcode(secundo)
+```
+
+Samma sak illustrerat med radbruten färgkodning:
+<pre>
+`r color_sequence((primo_63w))`
+</pre>
+
+<pre>
+`r color_sequence((secundo_63w))`
+</pre>
+
+Jämförelse - var skiljer sig sekvenserna åt?
+---------------------
+
+Horisontell sektionsvis jämförelse av enbart 3.e kodon - dvs begränsat urval till tecken i positioner jämnt delbara med tre:
+<pre>
+`r color_sequence(actg_wrap((primo_3k), 63))`
+</pre>
+<pre>
+`r color_sequence(actg_wrap((secundo_3k), 63))`
+</pre>
+
+Klassisk barcode över 3.e kodon - god överblick men svårt att se exakt var skillnaderna finns:  
+```{r fig.width = 6, fig.height = 0.5, echo = FALSE} 
+barcode(primo_3k)
+barcode(secundo_3k)
+```
+
+Radvis jämförelse med skillnader framhävda med grå markering:
+<pre>
+`r color_sequence(actg_diff(primo_3k, secundo_3k, muting = FALSE))`
+</pre>
+
+Resterande data i kodon 1 och 2 - dvs "det som inte är i kodon 3" - på klassiskt sätt:
+
+```{r fig.width = 6, fig.height = 0.5, echo = FALSE} 
+barcode(primo_12k)
+barcode(secundo_12k)
+```
+
+Illustrerade som separata stycken, färgkodade och radbrutna:
+
+<pre>
+`r color_sequence(actg_wrap(tolower(primo_12k), 63))`
+</pre>
+<pre>
+`r color_sequence(actg_wrap(tolower(secundo_12k), 63))`
+</pre>
+
+Jämförelsevisualisering - för detta urval av data ser vi betydligt färre skillnader:
+<pre>
+`r color_sequence(actg_diff(primo_12k, secundo_12k))`
+</pre>
+
+
+Och om vi slutligen gör samma sak för kodon-3-dataurvalet, men dessutom lyfter fram skillnaderna ytterligare, såsom ovan, genom att tona ned likheterna:
+<pre>
+`r color_sequence(actg_diff(primo_3k, secundo_3k, muting = TRUE))`
+</pre>
+
+
+Numeriskt mått på likhet mellan kodsekvenserna
+-------------------
+```{r, message=FALSE, echo=FALSE}
+require("RecordLinkage", quietly = TRUE) 
+```
+
+Levenshtein-avståndet ("edit distance" - minsta antalet edit operationer som behövs för att göra om ena strängen till den andra) är `r levenshteinDist(primo_3k, secundo_3k)` för tredjepositionerna och `r levenshteinDist(primo_12k, secundo_12k)` för förstaochandra-positionerna, samt `r levenshteinDist(primo, secundo)` sammantaget. 
+
+Levenshtein's likhetsmått kan beräknas. Detta mått definieras på intervallet [0,1] där 0 anger högsta olikhet och 1 anger högsta graden av likhet mellan två strängar. För tredjepositionsdatan blir detta mått `r levenshteinSim(primo_3k, secundo_3k)`. För förstaochandrapositionsdatan blir måttet betydligt högre: `r levenshteinSim(primo_12k, secundo_12k)`
+

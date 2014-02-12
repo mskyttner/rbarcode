@@ -1,0 +1,13 @@
+Package: rbarcode
+Title: Barcode visualizations for usage with knitr and slidify
+Description: 
+Version: 0.1
+Authors@R: 'Markus Skyttner <markus.skyttner@nrm.se> [aut, cre]'
+Depends:
+    R (>= 3.0.2)
+License: GPLv3
+LazyData: true
+VignetteBuilder: knitr
+Collate:
+    'actg.R'
+    'rbarcode-package.r'
